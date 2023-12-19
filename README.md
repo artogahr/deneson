@@ -2,7 +2,7 @@
 
 A nested text parser made to run with Deno, outputs JSON
 
-##### In the beginnin the universe was created.
+##### In the beginning the Universe was created.
 
 Later that day, God asked its subject to select a JavaScript runtime, main
 selections being Node and Deno.
