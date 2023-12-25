@@ -1,4 +1,4 @@
-import { PhysicalInterface } from "./interfaceObject.ts";
+import { LogicalInterface, PhysicalInterface } from "./interfaceObject.ts";
 const filePath = "src/input.txt";
 
 // Read the contents of the file
@@ -20,12 +20,14 @@ sections.forEach((section) => {
   const lines = section.split("\n");
   //Test if the interface is a Physical or a logical one
   if (RegExp("Physical interface:").test(lines[0])) {
-    let currentPhysicalInterface = new PhysicalInterface();
-    currentPhysicalInterface.name = lines[0].replace("Physical interface:", "")
-      .trim();
+    currentPhysicalInterface = new PhysicalInterface();
+    currentPhysicalInterface.name = lines[0].split(" ")[2].replace(",", "");
     physicalInterfaces.push(currentPhysicalInterface);
   } else if (RegExp("Logical interface").test(lines[0])) {
     //add to the current physical interface
+    let logicalInt = new LogicalInterface();
+    logicalInt.name = lines[0].split(" ")[2].replace(",", "");
+    currentPhysicalInterface.logIntList.push(logicalInt);
   }
 });
 

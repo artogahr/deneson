@@ -8,26 +8,9 @@ export class PhysicalInterface {
   duplex: string;
   mac: string;
   clearing: string;
-  statsList: interfaceStats[];
-  logIntList: {
-    name: string;
-    dscr: string;
-    protocolList: {
-      type: string;
-      value: {
-        ipList: {
-          ip: string;
-          mask: number;
-          net: string;
-          netLong: number;
-          broadLong: number;
-          flagList: string[];
-        };
-      };
-    }[];
-    statsList: interfaceStats[];
-    mtu: number;
-  };
+  statsList: InterfaceStats[];
+  logIntList: LogicalInterface[];
+
   constructor() {
     this.name = "";
     this.state = { admin: "", link: "" };
@@ -39,17 +22,11 @@ export class PhysicalInterface {
     this.mac = "";
     this.clearing = "";
     this.statsList = [];
-    this.logIntList = {
-      name: "",
-      dscr: "",
-      protocolList: [],
-      statsList: [],
-      mtu: 0,
-    };
+    this.logIntList = [];
   }
 }
 
-export class interfaceStats {
+export class InterfaceStats {
   type: string;
   counters: {
     inBytes: number;
@@ -72,5 +49,33 @@ export class interfaceStats {
       inPkts: 0,
       outPkts: 0,
     };
+  }
+}
+
+export class LogicalInterface {
+  name: string;
+  dscr: string;
+  protocolList: {
+    type: string;
+    value: {
+      ipList: {
+        ip: string;
+        mask: number;
+        net: string;
+        netLong: number;
+        broadLong: number;
+        flagList: string[];
+      };
+    };
+  }[];
+  statsList: InterfaceStats[];
+  mtu: number;
+
+  constructor() {
+    this.name = "";
+    this.dscr = "";
+    this.protocolList = [];
+    this.statsList = [];
+    this.mtu = 0;
   }
 }
