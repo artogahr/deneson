@@ -1,25 +1,32 @@
-// Specify the path to your text file
-const filePath = 'src/input.txt';
+import { PhysicalInterface } from "./interfaceObject.ts";
+const filePath = "src/input.txt";
 
 // Read the contents of the file
 const text = await Deno.readTextFile(filePath);
-interface InterfaceData {
-  name: string;
-  data: string;
-}
-let currentPhysicalInterface = null;
-const parsedData: {physicalInterfaces: InterfaceData[]} = {
-    physicalInterfaces: []
-  };
 
-const sections = text.split('\n\n');
+//Assuming the purpose of this script is to parse the physical interfaces only
+let physicalInterfaces: PhysicalInterface[] = [];
 
-sections.forEach(section => {
-  console.log(section);
-  const lines = section.split('\n');
-  const interfaceName = lines[0].split(' ')[0];
-  const interfaceData = lines.slice(1).join('\n');
-  parsedData.physicalInterfaces.push({ name: interfaceName, data: interfaceData });
-})
+// Split sections based on two new lines.
+// Will create an object for each section, but check if it is a physical interface or a logical one.
+// We hold the last physical interface in the currentPhysicalInterface variable.
+// For each logical interface, we create a new object and push it to the currentPhysicalInterface.
+// Add the physical interface to the list of physical interfaces when another physical interface is found, and set the currentPhysicalInterface to null.
 
-console.log(parsedData);
+let currentPhysicalInterface: PhysicalInterface = null;
+const sections = text.split("\n\n");
+
+sections.forEach((section) => {
+  const lines = section.split("\n");
+  //Test if the interface is a Physical or a logical one
+  if (RegExp("Physical interface:").test(lines[0])) {
+    let currentPhysicalInterface = new PhysicalInterface();
+    currentPhysicalInterface.name = lines[0].replace("Physical interface:", "")
+      .trim();
+    physicalInterfaces.push(currentPhysicalInterface);
+  } else if (RegExp("Logical interface").test(lines[0])) {
+    //add to the current physical interface
+  }
+});
+
+console.log(physicalInterfaces);
