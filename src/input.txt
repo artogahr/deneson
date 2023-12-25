@@ -1,7 +1,7 @@
 Physical interface: ge-0/0/0, Enabled, Physical link is Up
   Interface index: 138, SNMP ifIndex: 506, Generation: 141
   Description: STATIC1R16
-  Link-level type: Ethernet, MTU: 1514, Link-mode: Full-duplex, Speed: 1000mbps, BPDU Error: None, MAC-REWRITE Error: None, Loopback: Disabled, Source filtering: Disabled, Flow control: Enabled,
+  Link-level type: Ethernet, MTU: 1514, Link-mode: Full-duplex, Speed: 1000kbps, BPDU Error: None, MAC-REWRITE Error: None, Loopback: Disabled, Source filtering: Disabled, Flow control: Enabled,
   Auto-negotiation: Enabled, Remote fault: Online
   Device flags   : Present Running
   Interface flags: SNMP-Traps Internal: 0x4000

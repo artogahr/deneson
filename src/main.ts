@@ -52,9 +52,9 @@ sections.forEach((section) => {
         var linkModeMatch = line.match(/Link-mode: (\w+)/);
         currentPhysicalInterface.duplex = linkModeMatch ? linkModeMatch[1] : "";
 
-        var speedMatch = line.match(/Speed: (\d+)/);
+        var speedMatch = line.match(/Speed: (\d+)([KMGTP]?bps)/i);
         currentPhysicalInterface.speed = speedMatch
-          ? parseInt(speedMatch[1], 10)
+          ? convertSpeedToBitsPerSecond(speedMatch[1], speedMatch[2])
           : 0;
       } else if (RegExp("Current address").test(line)) {
         var macMatch = line.match(/Hardware address: (\S+)/);
@@ -74,4 +74,21 @@ sections.forEach((section) => {
   }
 });
 
+function convertSpeedToBitsPerSecond(value: string, unit: string) {
+  var multiplier = 1;
+  unit = unit.toLowerCase();
+
+  let multipliers: { [key: string]: number } = {
+    kbps: 1e3,
+    mbps: 1e6,
+    gbps: 1e9,
+    tbps: 1e12,
+    pbps: 1e15,
+  };
+
+  // Use the specified multiplier or default to 1
+  multiplier = multipliers[unit] || 1;
+
+  return parseInt(value, 10) * multiplier;
+}
 console.log(physicalInterfaces);
