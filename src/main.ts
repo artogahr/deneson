@@ -38,6 +38,31 @@ sections.forEach((section) => {
     }
 
     lines.forEach((line) => {
+      if (RegExp("Description").test(line)) {
+        currentPhysicalInterface.dscr = line.split(":")[1].trim();
+      } else if (RegExp("Link-level type").test(line)) {
+        var linkLevelMatch = line.match(/Link-level type: (\w+)/);
+        currentPhysicalInterface.linkLevelType = linkLevelMatch
+          ? linkLevelMatch[1]
+          : "";
+
+        var mtuMatch = line.match(/MTU: (\d+)/);
+        currentPhysicalInterface.mtu = mtuMatch ? parseInt(mtuMatch[1], 10) : 0;
+
+        var linkModeMatch = line.match(/Link-mode: (\w+)/);
+        currentPhysicalInterface.duplex = linkModeMatch ? linkModeMatch[1] : "";
+
+        var speedMatch = line.match(/Speed: (\d+)/);
+        currentPhysicalInterface.speed = speedMatch
+          ? parseInt(speedMatch[1], 10)
+          : 0;
+      } else if (RegExp("Current address").test(line)) {
+        var macMatch = line.match(/Hardware address: (\S+)/);
+        currentPhysicalInterface.mac = macMatch ? macMatch[1] : "";
+      } else if (RegExp("Statistics last cleared").test(line)) {
+        currentPhysicalInterface.clearing = line.split(":")[1].trim()
+          .toLowerCase();
+      }
     });
 
     physicalInterfaces.push(currentPhysicalInterface);
