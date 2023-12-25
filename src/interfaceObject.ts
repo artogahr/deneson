@@ -8,21 +8,7 @@ export interface PhysicalInterface {
     duplex: string,
     mac: string,
     clearing: string,
-    statsList: {
-        type: string,
-        counters: {
-            inBytes: number,
-            outBytes: number,
-            inPkts: number,
-            outPkts: number
-        },
-        load?: {
-            inBytes: number,
-            outBytes: number,
-            inPkts: number,
-            outPkts: number
-        },
-    }[],
+    statsList: interfaceStats[],
     logIntList: {
         name: string,
         dscr: string,
@@ -39,21 +25,23 @@ export interface PhysicalInterface {
                 }
             }
         }[],
-        statsList: {
-            type: string,
-            counters: {
-                inPkts: number,
-                inBytes: number,
-                outPkts: number,
-                outBytes: number
-            }
-            load?: {
-                inBytes: number,
-                outBytes: number,
-                inPkts: number,
-                outPkts: number
-            }
-        }[],
+        statsList: interfaceStats[],
         mtu: number
     }
+}
+
+export interface interfaceStats {
+    type: string,
+    counters: {
+        inBytes: number,
+        outBytes: number,
+        inPkts: number,
+        outPkts: number
+    },
+    load?: {
+        inBytes: number,
+        outBytes: number,
+        inPkts: number,
+        outPkts: number
+    },
 }
