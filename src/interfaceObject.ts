@@ -16,7 +16,7 @@ export interface PhysicalInterface {
             inPkts: number,
             outPkts: number
         },
-        load: {
+        load?: {
             inBytes: number,
             outBytes: number,
             inPkts: number,
@@ -47,7 +47,7 @@ export interface PhysicalInterface {
                 outPkts: number,
                 outBytes: number
             }
-            load: {
+            load?: {
                 inBytes: number,
                 outBytes: number,
                 inPkts: number,
