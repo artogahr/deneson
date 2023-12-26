@@ -297,7 +297,50 @@ sections.forEach((section) => {
         currentSection = "protocol";
         let protMatch = line.match(/Protocol (\w+)/);
         currentProtocol = new Protocol(protMatch ? protMatch[1] : "");
+        // This could've been an if statement, but I want to leave it open-handed for parsing info from other protocols in the future
+        switch (currentProtocol.type) {
+          case "inet": {
+            let mtuMatch = line.match(/MTU: (\d+)/);
+            if (mtuMatch) {
+              logicalInt.mtu = parseInt(mtuMatch[1], 10);
+            }
+            currentProtocol.value = {
+              ipList: {
+                ip: "",
+                mask: 0,
+                net: "",
+                netLong: 0,
+                broadLong: 0,
+                flagList: [],
+              },
+            };
+          }
+        }
         logicalInt.protocolList.push(currentProtocol);
+      } else if (
+        RegExp("Addresses, Flags:").test(line) && currentProtocol.type == "inet"
+      ) {
+        // Functional programming ftw
+        line.split(":")[1].split(" ").filter((x) => x.length != 0).forEach(
+          (flag) => {
+            currentProtocol.value?.ipList.flagList.push(flag.toLowerCase());
+          },
+        );
+      } else if (
+        RegExp("Destination").test(line) && currentProtocol.type == "inet"
+      ) {
+        // Parsing IP addresses is hard.
+        let ipMatch = line.match(
+          /Destination: (\d+\.\d+\.\d+\.\d+)\/(\d+), Local: (\d+\.\d+\.\d+\.\d+)/,
+        );
+        if (currentProtocol.value) {
+          let mask = ipMatch ? parseInt(ipMatch[2]) : 0;
+          currentProtocol.value.ipList.net = ipMatch
+            ? ipMatch[1] + "/" + mask
+            : "";
+          currentProtocol.value.ipList.mask = mask;
+          currentProtocol.value.ipList.ip = ipMatch ? ipMatch[3] : "";
+        }
       }
     });
     currentPhysicalInterface.logIntList.push(logicalInt);
