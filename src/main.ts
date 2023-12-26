@@ -26,20 +26,14 @@ sections.forEach((section) => {
   //Test if the interface is a Physical or a logical one
   if (RegExp("Physical interface:").test(lines[0])) {
     currentPhysicalInterface = new PhysicalInterface();
-    currentPhysicalInterface.name = lines[0].split(" ")[2].replace(",", "");
-
-    // Check if the interface is up or down
-    if (RegExp("Enabled").test(lines[0])) {
-      currentPhysicalInterface.state.admin = "up";
-      if (RegExp("Up").test(lines[0])) {
-        currentPhysicalInterface.state.link = "up";
-      } else {
-        currentPhysicalInterface.state.link = "down";
-      }
-    } else if (RegExp("Disabled").test(lines[0])) {
-      currentPhysicalInterface.state.admin = "down";
-      currentPhysicalInterface.state.link = "down";
-      // Can't have link if admin is down anyway
+    let firstLineMatch = lines[0].match(
+      /Physical interface: ([\w'-\/]+), (\w+), Physical link is (\w+)/,
+    );
+    console.log(firstLineMatch);
+    if (firstLineMatch) {
+      currentPhysicalInterface.name = firstLineMatch[1];
+      currentPhysicalInterface.state.admin = firstLineMatch[2].toLowerCase();
+      currentPhysicalInterface.state.link = firstLineMatch[3].toLowerCase();
     }
 
     // Variable holding what kind of sub-section we're reading now
