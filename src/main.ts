@@ -88,12 +88,9 @@ sections.forEach((section) => {
         );
         if (RegExp("bps").test(line)) {
           let bpsMatch = line.match(/(\d+) bps/);
-          currentStatsObject.load = {
-            inBytes: bpsMatch ? parseInt(bpsMatch[1], 10) : 0,
-            outBytes: 0,
-            inPkts: 0,
-            outPkts: 0,
-          };
+          currentStatsObject.load.inBytes = bpsMatch
+            ? parseInt(bpsMatch[1], 10)
+            : 0;
         }
       } else if (RegExp("Output bytes").test(line)) {
         currentStatsObject.counters.outBytes = parseInt(
@@ -129,7 +126,6 @@ sections.forEach((section) => {
             ? parseInt(bpsMatch[1], 10)
             : 0;
         }
-        currentPhysicalInterface.statsList.push(currentStatsObject);
         currentStatsObject = new InterfaceStats();
       }
     });

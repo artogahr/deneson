@@ -8,7 +8,10 @@ export class PhysicalInterface {
   duplex: string;
   mac: string;
   clearing: string;
-  statsList: InterfaceStats[];
+  trafficStats: InterfaceStats;
+  inErrors: ErrorStats;
+  outErrors: ErrorStats;
+
   logIntList: LogicalInterface[];
 
   constructor() {
@@ -21,7 +24,9 @@ export class PhysicalInterface {
     this.duplex = "";
     this.mac = "";
     this.clearing = "";
-    this.statsList = [];
+    this.trafficStats = new InterfaceStats();
+    this.inErrors = new ErrorStats();
+    this.outErrors = new ErrorStats();
     this.logIntList = [];
   }
 }
@@ -34,7 +39,7 @@ export class InterfaceStats {
     inPkts: number;
     outPkts: number;
   };
-  load?: {
+  load: {
     inBytes: number;
     outBytes: number;
     inPkts: number;
@@ -48,6 +53,32 @@ export class InterfaceStats {
       outBytes: 0,
       inPkts: 0,
       outPkts: 0,
+    };
+    this.load = {
+      inBytes: 0,
+      outBytes: 0,
+      inPkts: 0,
+      outPkts: 0,
+    };
+  }
+}
+
+export class ErrorStats {
+  type: string;
+  counters: {
+    inErr: number;
+    inDrops: number;
+    outErr: number;
+    outDrops: number;
+  };
+
+  constructor() {
+    this.type = "";
+    this.counters = {
+      inErr: 0,
+      inDrops: 0,
+      outErr: 0,
+      outDrops: 0,
     };
   }
 }
