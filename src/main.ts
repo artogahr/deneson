@@ -50,14 +50,16 @@ sections.forEach((section) => {
       } else if (RegExp("Link-level type").test(line)) {
         var linkLevelMatch = line.match(/Link-level type: (\w+)/);
         currentPhysicalInterface.linkLevelType = linkLevelMatch
-          ? linkLevelMatch[1]
+          ? linkLevelMatch[1].toLowerCase()
           : "";
 
         var mtuMatch = line.match(/MTU: (\d+)/);
         currentPhysicalInterface.mtu = mtuMatch ? parseInt(mtuMatch[1], 10) : 0;
 
         var linkModeMatch = line.match(/Link-mode: (\w+)/);
-        currentPhysicalInterface.duplex = linkModeMatch ? linkModeMatch[1] : "";
+        currentPhysicalInterface.duplex = linkModeMatch
+          ? linkModeMatch[1].toLowerCase()
+          : "";
 
         var speedMatch = line.match(/Speed: (\d+)([KMGTP]?bps)/i);
         currentPhysicalInterface.speed = speedMatch
