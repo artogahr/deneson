@@ -155,7 +155,7 @@ sections.forEach((section) => {
           currentPhysicalInterface.outErrors.counters.outErr = errorMatch
             ? parseInt(errorMatch[1], 10)
             : 0;
-          currentPhysicalInterface.inErrors.counters.outDrops = errorMatch
+          currentPhysicalInterface.outErrors.counters.outDrops = errorMatch
             ? parseInt(errorMatch[2], 10)
             : 0;
         }

@@ -60,20 +60,15 @@ export class InterfaceStats {
 export class ErrorStats {
   type: string;
   counters: {
-    inErr: number;
-    inDrops: number;
-    outErr: number;
-    outDrops: number;
+    inErr?: number;
+    inDrops?: number;
+    outErr?: number;
+    outDrops?: number;
   };
 
   constructor() {
     this.type = "";
-    this.counters = {
-      inErr: 0,
-      inDrops: 0,
-      outErr: 0,
-      outDrops: 0,
-    };
+    this.counters = {};
   }
 }
 
