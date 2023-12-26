@@ -87,9 +87,12 @@ sections.forEach((section) => {
         );
         if (RegExp("bps").test(line)) {
           let bpsMatch = line.match(/(\d+) bps/);
-          currentPhysicalInterface.trafficStats.load.inBytes = bpsMatch
-            ? parseInt(bpsMatch[1], 10)
-            : 0;
+          currentPhysicalInterface.trafficStats.load = {
+            inBytes: bpsMatch ? parseInt(bpsMatch[1], 10) : 0,
+            outBytes: 0,
+            inPkts: 0,
+            outPkts: 0,
+          };
         }
       } else if (
         RegExp("Output bytes").test(line) && currentSection == "traffic"
@@ -98,7 +101,9 @@ sections.forEach((section) => {
           line.split(":")[1].trim(),
           10,
         );
-        if (RegExp("bps").test(line)) {
+        if (
+          RegExp("bps").test(line) && currentPhysicalInterface.trafficStats.load
+        ) {
           let bpsMatch = line.match(/(\d+) bps/);
           console.log(bpsMatch);
           currentPhysicalInterface.trafficStats.load.outBytes = bpsMatch
@@ -112,7 +117,9 @@ sections.forEach((section) => {
           line.split(":")[1].trim(),
           10,
         );
-        if (RegExp("pps").test(line)) {
+        if (
+          RegExp("pps").test(line) && currentPhysicalInterface.trafficStats.load
+        ) {
           let bpsMatch = line.match(/(\d+) pps/);
           currentPhysicalInterface.trafficStats.load.inPkts = bpsMatch
             ? parseInt(bpsMatch[0], 10)
@@ -125,7 +132,9 @@ sections.forEach((section) => {
           line.split(":")[1].trim(),
           10,
         );
-        if (RegExp("pps").test(line)) {
+        if (
+          RegExp("pps").test(line) && currentPhysicalInterface.trafficStats.load
+        ) {
           let bpsMatch = line.match(/(\d+) pps/);
           currentPhysicalInterface.trafficStats.load.outPkts = bpsMatch
             ? parseInt(bpsMatch[1], 10)
@@ -156,6 +165,12 @@ sections.forEach((section) => {
     //add to the current physical interface
     let logicalInt = new LogicalInterface();
     logicalInt.name = lines[0].split(" ")[4].replace(",", "");
+    lines.forEach((line) => {
+      if (RegExp("Description").test(line)) {
+        logicalInt.dscr = line.split(":")[1].trim();
+      } else if (RegExp("Protocol").test(line)) {
+      }
+    });
     currentPhysicalInterface.logIntList.push(logicalInt);
   }
 });

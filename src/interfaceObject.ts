@@ -39,7 +39,7 @@ export class InterfaceStats {
     inPkts: number;
     outPkts: number;
   };
-  load: {
+  load?: {
     inBytes: number;
     outBytes: number;
     inPkts: number;
@@ -49,12 +49,6 @@ export class InterfaceStats {
   constructor() {
     this.type = "traffic";
     this.counters = {
-      inBytes: 0,
-      outBytes: 0,
-      inPkts: 0,
-      outPkts: 0,
-    };
-    this.load = {
       inBytes: 0,
       outBytes: 0,
       inPkts: 0,
@@ -85,28 +79,32 @@ export class ErrorStats {
 
 export class LogicalInterface {
   name: string;
-  dscr: string;
-  protocolList: {
-    type: string;
-    value: {
-      ipList: {
-        ip: string;
-        mask: number;
-        net: string;
-        netLong: number;
-        broadLong: number;
-        flagList: string[];
-      };
-    };
-  }[];
+  dscr?: string;
+  protocolList: Protocol[];
   statsList: InterfaceStats[];
   mtu: number;
 
   constructor() {
     this.name = "";
-    this.dscr = "";
     this.protocolList = [];
     this.statsList = [];
     this.mtu = 0;
+  }
+}
+
+export class Protocol {
+  type: string;
+  value?: {
+    ipList: {
+      ip: string;
+      mask: number;
+      net: string;
+      netLong: number;
+      broadLong: number;
+      flagList: string[];
+    };
+  };
+  constructor() {
+    this.type = "";
   }
 }
