@@ -80,19 +80,7 @@ export class ErrorStats {
 export class LogicalInterface {
   name: string;
   dscr: string;
-  protocolList: {
-    type: string;
-    value: {
-      ipList: {
-        ip: string;
-        mask: number;
-        net: string;
-        netLong: number;
-        broadLong: number;
-        flagList: string[];
-      };
-    };
-  }[];
+  protocolList: Protocol[];
   statsList: InterfaceStats[];
   mtu: number;
 
@@ -102,5 +90,23 @@ export class LogicalInterface {
     this.protocolList = [];
     this.statsList = [];
     this.mtu = 0;
+  }
+}
+
+export class Protocol {
+  type: string;
+  value?: {
+    ipList: {
+      ip: string;
+      mask: number;
+      net: string;
+      netLong: number;
+      broadLong: number;
+      flagList: string[];
+    };
+  };
+
+  constructor(type: string = "") {
+    this.type = type;
   }
 }
