@@ -66,8 +66,13 @@ sections.forEach((section) => {
           ? convertSpeedToBitsPerSecond(speedMatch[1], speedMatch[2])
           : 0;
       } else if (RegExp("Current address").test(line)) {
-        var macMatch = line.match(/Hardware address: (\S+)/);
-        currentPhysicalInterface.mac = macMatch ? macMatch[1] : "";
+        var macMatch = line.match(
+          /Hardware address: (\w+):(\w+):(\w+):(\w+):(\w+):(\w+)/,
+        );
+        currentPhysicalInterface.mac = macMatch
+          ? macMatch[1] + macMatch[2] + "." + macMatch[3] + macMatch[4] + "." +
+            macMatch[5] + macMatch[6]
+          : "";
       } else if (RegExp("Statistics last cleared").test(line)) {
         currentPhysicalInterface.clearing = line.split(":")[1].trim()
           .toLowerCase();
