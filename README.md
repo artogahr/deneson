@@ -29,3 +29,8 @@ The first thing that comes to mind when writing a parser for this is keeping tra
 There are some sprinkles of algorithms thrown in there like converting an IP address string to an integer, or converting between speed units to bits per second. Otherwise, the program is mostly if statements. 
 
 I did use tools such as ChatGPT for this one, but mostly for questions regarding TypeScript's intricacies, since it's my first time working with it. I'm still an advocate for manual searching for learning purposes. 
+
+To run:
+```console
+deno run --allow-read src/main.ts
+```
