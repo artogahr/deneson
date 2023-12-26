@@ -329,7 +329,7 @@ sections.forEach((section) => {
       } else if (
         RegExp("Destination").test(line) && currentProtocol.type == "inet"
       ) {
-        // Parsing IP addresses is hard.
+        // Parsing IP addresses is a biit tricky.
         let ipMatch = line.match(
           /Destination: (\d+\.\d+\.\d+\.\d+)\/(\d+), Local: (\d+\.\d+\.\d+\.\d+)/,
         );
@@ -340,6 +340,12 @@ sections.forEach((section) => {
             : "";
           currentProtocol.value.ipList.mask = mask;
           currentProtocol.value.ipList.ip = ipMatch ? ipMatch[3] : "";
+          currentProtocol.value.ipList.broadLong = IPtoLong(
+            currentProtocol.value.ipList.ip,
+          );
+          currentProtocol.value.ipList.netLong = IPtoLong(
+            currentProtocol.value.ipList.net,
+          );
         }
       }
     });
@@ -365,3 +371,13 @@ function convertSpeedToBitsPerSecond(value: string, unit: string) {
   return parseInt(value, 10) * multiplier;
 }
 console.log(JSON.stringify(physicalInterfaces, null, "  "));
+
+function IPtoLong(ip: string) {
+  let parts = ip.split(".");
+  return (
+    (parseInt(parts[0], 10) << 24) |
+    (parseInt(parts[1], 10) << 16) |
+    (parseInt(parts[2], 10) << 8) |
+    parseInt(parts[3], 10)
+  );
+}
