@@ -88,17 +88,28 @@ export class LogicalInterface {
 export class Protocol {
   type: string;
   value?: {
-    ipList: {
-      ip: string;
-      mask: number;
-      net: string;
-      netLong: number;
-      broadLong: number;
-      flagList: string[];
-    };
+    ipList: IPInfo[];
   };
 
   constructor(type: string = "") {
     this.type = type;
+  }
+}
+
+export class IPInfo {
+  ip: string;
+  mask: number;
+  net: string;
+  netLong: number;
+  broadLong: number;
+  flagList: string[];
+
+  constructor() {
+    this.ip = "";
+    this.mask = 0;
+    this.net = "";
+    this.netLong = 0;
+    this.broadLong = 0;
+    this.flagList = [];
   }
 }

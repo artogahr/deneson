@@ -1,5 +1,6 @@
 import {
   InterfaceStats,
+  IPInfo,
   LogicalInterface,
   PhysicalInterface,
   Protocol,
@@ -169,6 +170,7 @@ sections.forEach((section) => {
     let currentSection = "";
     let currentStatistics = new InterfaceStats();
     let currentProtocol = new Protocol();
+    let currentIPInfo = new IPInfo();
     lines.forEach((line) => {
       if (RegExp("Description").test(line)) {
         logicalInt.dscr = line.split(":")[1].trim();
@@ -306,26 +308,18 @@ sections.forEach((section) => {
             if (mtuMatch) {
               logicalInt.mtu = parseInt(mtuMatch[1], 10);
             }
-            currentProtocol.value = {
-              ipList: {
-                ip: "",
-                mask: 0,
-                net: "",
-                netLong: 0,
-                broadLong: 0,
-                flagList: [],
-              },
-            };
           }
         }
         logicalInt.protocolList.push(currentProtocol);
       } else if (
         RegExp("Addresses, Flags:").test(line) && currentProtocol.type == "inet"
       ) {
+        currentProtocol.value = { ipList: [] };
+        currentIPInfo = new IPInfo();
         // Functional programming ftw
         line.split(":")[1].split(" ").filter((x) => x.length != 0).forEach(
           (flag) => {
-            currentProtocol.value?.ipList.flagList.push(flag.toLowerCase());
+            currentIPInfo.flagList.push(flag.toLowerCase());
           },
         );
       } else if (
@@ -337,17 +331,16 @@ sections.forEach((section) => {
         );
         if (currentProtocol.value) {
           let mask = ipMatch ? parseInt(ipMatch[2]) : 0;
-          currentProtocol.value.ipList.net = ipMatch
-            ? ipMatch[1] + "/" + mask
-            : "";
-          currentProtocol.value.ipList.mask = mask;
-          currentProtocol.value.ipList.ip = ipMatch ? ipMatch[3] : "";
-          currentProtocol.value.ipList.broadLong = IPtoLong(
-            currentProtocol.value.ipList.ip,
+          currentIPInfo.net = ipMatch ? ipMatch[1] + "/" + mask : "";
+          currentIPInfo.mask = mask;
+          currentIPInfo.ip = ipMatch ? ipMatch[3] : "";
+          currentIPInfo.broadLong = IPtoLong(
+            currentIPInfo.ip,
           );
-          currentProtocol.value.ipList.netLong = IPtoLong(
-            currentProtocol.value.ipList.net,
+          currentIPInfo.netLong = IPtoLong(
+            currentIPInfo.net,
           );
+          currentProtocol.value.ipList?.push(currentIPInfo);
         }
       }
     });
