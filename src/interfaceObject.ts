@@ -47,7 +47,7 @@ export class InterfaceStats {
   };
 
   constructor() {
-    this.type = "";
+    this.type = "traffic";
     this.counters = {
       inBytes: 0,
       outBytes: 0,

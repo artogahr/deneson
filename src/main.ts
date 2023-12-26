@@ -41,9 +41,8 @@ sections.forEach((section) => {
       // Can't have link if admin is down anyway
     }
 
-    // Variable to check if we're reading a traffic statistics section
-    let statsSection = false;
-    let currentStatsObject: InterfaceStats = new InterfaceStats();
+    // Variable holding what kind of sub-section we're reading now
+    let currentSection = "";
     lines.forEach((line) => {
       if (RegExp("Description").test(line)) {
         currentPhysicalInterface.dscr = line.split(":")[1].trim();
@@ -70,63 +69,68 @@ sections.forEach((section) => {
         currentPhysicalInterface.clearing = line.split(":")[1].trim()
           .toLowerCase();
       } else if (RegExp("Traffic statistics").test(line)) {
-        statsSection = true;
-        currentStatsObject = new InterfaceStats();
-        currentStatsObject.type = "traffic";
+        currentSection = "traffic";
       } else if (RegExp("Input errors").test(line)) {
-        statsSection = true;
-        currentStatsObject = new InterfaceStats();
-        currentStatsObject.type = "inErrors";
+        currentSection = "inErrors";
+        currentPhysicalInterface.inErrors.type = "inErrors";
       } else if (RegExp("Output errors").test(line)) {
-        statsSection = true;
-        currentStatsObject = new InterfaceStats();
-        currentStatsObject.type = "outErrors";
-      } else if (RegExp("Input  bytes").test(line)) {
-        currentStatsObject.counters.inBytes = parseInt(
+        currentSection = "outErrors";
+        currentPhysicalInterface.outErrors.type = "outErrors";
+      } else if (RegExp("LSI").test(line)) {
+        currentSection = "lsi";
+      } else if (
+        RegExp("Input  bytes").test(line) && currentSection == "traffic"
+      ) {
+        currentPhysicalInterface.trafficStats.counters.inBytes = parseInt(
           line.split(":")[1].trim(),
           10,
         );
         if (RegExp("bps").test(line)) {
           let bpsMatch = line.match(/(\d+) bps/);
-          currentStatsObject.load.inBytes = bpsMatch
+          currentPhysicalInterface.trafficStats.load.inBytes = bpsMatch
             ? parseInt(bpsMatch[1], 10)
             : 0;
         }
-      } else if (RegExp("Output bytes").test(line)) {
-        currentStatsObject.counters.outBytes = parseInt(
+      } else if (
+        RegExp("Output bytes").test(line) && currentSection == "traffic"
+      ) {
+        currentPhysicalInterface.trafficStats.counters.outBytes = parseInt(
           line.split(":")[1].trim(),
           10,
         );
-        if (RegExp("bps").test(line) && currentStatsObject.load) {
+        if (RegExp("bps").test(line)) {
           let bpsMatch = line.match(/(\d+) bps/);
           console.log(bpsMatch);
-          currentStatsObject.load.outBytes = bpsMatch
+          currentPhysicalInterface.trafficStats.load.outBytes = bpsMatch
             ? parseInt(bpsMatch[1], 10)
             : 0;
         }
-      } else if (RegExp("Input  packets").test(line)) {
-        currentStatsObject.counters.inPkts = parseInt(
+      } else if (
+        RegExp("Input  packets").test(line) && currentSection == "traffic"
+      ) {
+        currentPhysicalInterface.trafficStats.counters.inPkts = parseInt(
           line.split(":")[1].trim(),
           10,
         );
-        if (RegExp("pps").test(line) && currentStatsObject.load) {
+        if (RegExp("pps").test(line)) {
           let bpsMatch = line.match(/(\d+) pps/);
-          currentStatsObject.load.inPkts = bpsMatch
+          currentPhysicalInterface.trafficStats.load.inPkts = bpsMatch
             ? parseInt(bpsMatch[0], 10)
             : 0;
         }
-      } else if (RegExp("Output packets").test(line)) {
-        currentStatsObject.counters.outPkts = parseInt(
+      } else if (
+        RegExp("Output packets").test(line) && currentSection == "traffic"
+      ) {
+        currentPhysicalInterface.trafficStats.counters.outPkts = parseInt(
           line.split(":")[1].trim(),
           10,
         );
-        if (RegExp("pps").test(line) && currentStatsObject.load) {
+        if (RegExp("pps").test(line)) {
           let bpsMatch = line.match(/(\d+) pps/);
-          currentStatsObject.load.outPkts = bpsMatch
+          currentPhysicalInterface.trafficStats.load.outPkts = bpsMatch
             ? parseInt(bpsMatch[1], 10)
             : 0;
         }
-        currentStatsObject = new InterfaceStats();
       }
     });
 
