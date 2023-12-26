@@ -53,7 +53,7 @@ Physical interface: ge-0/0/0, Enabled, Physical link is Up
     Transit statistics:
      Input  bytes  :             10092029                    0 bps
      Output bytes  :             10334944                    0 bps
-     Input  packets:               164260                    0 pps
+     Input  packets:               164260                    5 pps
      Output packets:               167040                    0 pps
     Security: Zone: Null
     Flow Statistics :  

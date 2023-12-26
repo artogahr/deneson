@@ -165,10 +165,90 @@ sections.forEach((section) => {
     //add to the current physical interface
     let logicalInt = new LogicalInterface();
     logicalInt.name = lines[0].split(" ")[4].replace(",", "");
+    let currentSection = "";
+    let currentStatistics = new InterfaceStats();
     lines.forEach((line) => {
       if (RegExp("Description").test(line)) {
         logicalInt.dscr = line.split(":")[1].trim();
-      } else if (RegExp("Protocol").test(line)) {
+      } else if (RegExp("Traffic statistics").test(line)) {
+        currentSection = "traffic";
+        currentStatistics = new InterfaceStats("traffic");
+      } else if (RegExp("Local statistics").test(line)) {
+        currentSection = "local";
+        currentStatistics = new InterfaceStats("local");
+      } else if (RegExp("Transit statistics").test(line)) {
+        currentSection = "transit";
+        currentStatistics = new InterfaceStats("transit");
+      } else if (RegExp("Bundle").test(line)) {
+        currentSection = "bundle";
+        currentStatistics = new InterfaceStats("bundle");
+      } else if (RegExp("Input").test(line)) {
+        switch (currentSection) {
+          case "local":
+          case "transit":
+          case "traffic": {
+            if (RegExp("bytes").test(line)) {
+              currentStatistics.counters.inBytes = parseInt(
+                line.split(":")[1].trim(),
+                10,
+              );
+              if (RegExp("bps").test(line)) {
+                let bpsMatch = line.match(/(\d+) bps/);
+                currentStatistics.load = {
+                  inBytes: bpsMatch ? parseInt(bpsMatch[0], 10) : 0,
+                  outBytes: 0,
+                  inPkts: 0,
+                  outPkts: 0,
+                };
+              }
+            } else if (RegExp("packets").test(line)) {
+              currentStatistics.counters.inBytes = parseInt(
+                line.split(":")[1].trim(),
+                10,
+              );
+              if (RegExp("pps").test(line) && currentStatistics.load) {
+                let ppsMatch = line.match(/(\d+) pps/);
+                currentStatistics.load.inPkts = ppsMatch
+                  ? parseInt(ppsMatch[0], 10)
+                  : 5;
+              }
+            }
+            break;
+          }
+        }
+      } else if (RegExp("Output").test(line)) {
+        console.log(line, currentSection);
+        switch (currentSection) {
+          case "local":
+          case "transit":
+          case "traffic": {
+            if (RegExp("packets").test(line)) {
+              currentStatistics.counters.outPkts = parseInt(
+                line.split(":")[1].trim(),
+              );
+              logicalInt.statsList.push(currentStatistics);
+              currentStatistics = new InterfaceStats();
+              if (RegExp("pps").test(line) && currentStatistics.load) {
+                let ppsMatch = line.match(/(\d+) pps/);
+                currentStatistics.load.outPkts = ppsMatch
+                  ? parseInt(ppsMatch[1], 10)
+                  : 0;
+              }
+            } else {
+              currentStatistics.counters.outBytes = parseInt(
+                line.split(":")[1].trim(),
+                10,
+              );
+              if (RegExp("bps").test(line) && currentStatistics.load) {
+                let bpsMatch = line.match(/(\d+) bps/);
+                currentStatistics.load.outBytes = bpsMatch
+                  ? parseInt(bpsMatch[1], 10)
+                  : 0;
+              }
+            }
+            break;
+          }
+        }
       }
     });
     currentPhysicalInterface.logIntList.push(logicalInt);

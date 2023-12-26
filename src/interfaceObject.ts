@@ -46,8 +46,8 @@ export class InterfaceStats {
     outPkts: number;
   };
 
-  constructor() {
-    this.type = "traffic";
+  constructor(type: string = "") {
+    this.type = type;
     this.counters = {
       inBytes: 0,
       outBytes: 0,
@@ -79,32 +79,28 @@ export class ErrorStats {
 
 export class LogicalInterface {
   name: string;
-  dscr?: string;
-  protocolList: Protocol[];
+  dscr: string;
+  protocolList: {
+    type: string;
+    value: {
+      ipList: {
+        ip: string;
+        mask: number;
+        net: string;
+        netLong: number;
+        broadLong: number;
+        flagList: string[];
+      };
+    };
+  }[];
   statsList: InterfaceStats[];
   mtu: number;
 
   constructor() {
     this.name = "";
+    this.dscr = "";
     this.protocolList = [];
     this.statsList = [];
     this.mtu = 0;
-  }
-}
-
-export class Protocol {
-  type: string;
-  value?: {
-    ipList: {
-      ip: string;
-      mask: number;
-      net: string;
-      netLong: number;
-      broadLong: number;
-      flagList: string[];
-    };
-  };
-  constructor() {
-    this.type = "";
   }
 }
