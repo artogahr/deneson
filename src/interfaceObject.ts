@@ -1,14 +1,14 @@
 export class PhysicalInterface {
   name: string;
   state: { admin: string; link: string };
-  dscr: string;
+  dscr?: string;
   linkLevelType: string;
   mtu: number;
   speed: number;
-  duplex: string;
+  duplex?: string;
   mac: string;
   clearing: string;
-  trafficStats: InterfaceStats;
+  statsList: InterfaceStats;
   inErrors: ErrorStats;
   outErrors: ErrorStats;
 
@@ -17,14 +17,12 @@ export class PhysicalInterface {
   constructor() {
     this.name = "";
     this.state = { admin: "", link: "" };
-    this.dscr = "";
     this.linkLevelType = "";
     this.mtu = 0;
     this.speed = 0;
-    this.duplex = "";
     this.mac = "";
     this.clearing = "";
-    this.trafficStats = new InterfaceStats();
+    this.statsList = new InterfaceStats();
     this.inErrors = new ErrorStats();
     this.outErrors = new ErrorStats();
     this.logIntList = [];
@@ -74,14 +72,13 @@ export class ErrorStats {
 
 export class LogicalInterface {
   name: string;
-  dscr: string;
+  dscr?: string;
   protocolList: Protocol[];
   statsList: InterfaceStats[];
   mtu: number;
 
   constructor() {
     this.name = "";
-    this.dscr = "";
     this.protocolList = [];
     this.statsList = [];
     this.mtu = 0;

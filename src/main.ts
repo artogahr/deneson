@@ -29,7 +29,6 @@ sections.forEach((section) => {
     let firstLineMatch = lines[0].match(
       /Physical interface: ([\w'-\/]+), (\w+), Physical link is (\w+)/,
     );
-    console.log(firstLineMatch);
     if (firstLineMatch) {
       currentPhysicalInterface.name = firstLineMatch[1];
       currentPhysicalInterface.state.admin = firstLineMatch[2].toLowerCase();
@@ -53,7 +52,7 @@ sections.forEach((section) => {
         var linkModeMatch = line.match(/Link-mode: (\w+)/);
         currentPhysicalInterface.duplex = linkModeMatch
           ? linkModeMatch[1].toLowerCase()
-          : "";
+          : undefined;
 
         var speedMatch = line.match(/Speed: (\d+)([KMGTP]?bps)/i);
         currentPhysicalInterface.speed = speedMatch
@@ -72,6 +71,7 @@ sections.forEach((section) => {
           .toLowerCase();
       } else if (RegExp("Traffic statistics").test(line)) {
         currentSection = "traffic";
+        currentPhysicalInterface.statsList.type = "traffic";
       } else if (RegExp("Input errors").test(line)) {
         currentSection = "inErrors";
         currentPhysicalInterface.inErrors.type = "inErrors";
@@ -83,13 +83,13 @@ sections.forEach((section) => {
       } else if (
         RegExp("Input  bytes").test(line) && currentSection == "traffic"
       ) {
-        currentPhysicalInterface.trafficStats.counters.inBytes = parseInt(
+        currentPhysicalInterface.statsList.counters.inBytes = parseInt(
           line.split(":")[1].trim(),
           10,
         );
         if (RegExp("bps").test(line)) {
           let bpsMatch = line.match(/(\d+) bps/);
-          currentPhysicalInterface.trafficStats.load = {
+          currentPhysicalInterface.statsList.load = {
             inBytes: bpsMatch ? parseInt(bpsMatch[1], 10) : 0,
             outBytes: 0,
             inPkts: 0,
@@ -99,45 +99,45 @@ sections.forEach((section) => {
       } else if (
         RegExp("Output bytes").test(line) && currentSection == "traffic"
       ) {
-        currentPhysicalInterface.trafficStats.counters.outBytes = parseInt(
+        currentPhysicalInterface.statsList.counters.outBytes = parseInt(
           line.split(":")[1].trim(),
           10,
         );
         if (
-          RegExp("bps").test(line) && currentPhysicalInterface.trafficStats.load
+          RegExp("bps").test(line) && currentPhysicalInterface.statsList.load
         ) {
           let bpsMatch = line.match(/(\d+) bps/);
-          currentPhysicalInterface.trafficStats.load.outBytes = bpsMatch
+          currentPhysicalInterface.statsList.load.outBytes = bpsMatch
             ? parseInt(bpsMatch[1], 10)
             : 0;
         }
       } else if (
-        RegExp("Input  packets").test(line) && currentSection == "traffic"
+        RegExp("Input  packets:").test(line) && currentSection == "traffic"
       ) {
-        currentPhysicalInterface.trafficStats.counters.inPkts = parseInt(
+        currentPhysicalInterface.statsList.counters.inPkts = parseInt(
           line.split(":")[1].trim(),
           10,
         );
         if (
-          RegExp("pps").test(line) && currentPhysicalInterface.trafficStats.load
+          RegExp("pps").test(line) && currentPhysicalInterface.statsList.load
         ) {
           let bpsMatch = line.match(/(\d+) pps/);
-          currentPhysicalInterface.trafficStats.load.inPkts = bpsMatch
+          currentPhysicalInterface.statsList.load.inPkts = bpsMatch
             ? parseInt(bpsMatch[0], 10)
             : 0;
         }
       } else if (
         RegExp("Output packets").test(line) && currentSection == "traffic"
       ) {
-        currentPhysicalInterface.trafficStats.counters.outPkts = parseInt(
+        currentPhysicalInterface.statsList.counters.outPkts = parseInt(
           line.split(":")[1].trim(),
           10,
         );
         if (
-          RegExp("pps").test(line) && currentPhysicalInterface.trafficStats.load
+          RegExp("pps").test(line) && currentPhysicalInterface.statsList.load
         ) {
           let bpsMatch = line.match(/(\d+) pps/);
-          currentPhysicalInterface.trafficStats.load.outPkts = bpsMatch
+          currentPhysicalInterface.statsList.load.outPkts = bpsMatch
             ? parseInt(bpsMatch[1], 10)
             : 0;
         }
@@ -204,10 +204,11 @@ sections.forEach((section) => {
                 };
               }
             } else if (RegExp("packets").test(line)) {
-              currentStatistics.counters.inBytes = parseInt(
+              currentStatistics.counters.inPkts = parseInt(
                 line.split(":")[1].trim(),
                 10,
               );
+              console.log(line.split(":")[1].trim());
               if (RegExp("pps").test(line) && currentStatistics.load) {
                 let ppsMatch = line.match(/(\d+) pps/);
                 currentStatistics.load.inPkts = ppsMatch
