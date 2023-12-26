@@ -210,7 +210,6 @@ sections.forEach((section) => {
                 line.split(":")[1].trim(),
                 10,
               );
-              console.log(line.split(":")[1].trim());
               if (RegExp("pps").test(line) && currentStatistics.load) {
                 let ppsMatch = line.match(/(\d+) pps/);
                 currentStatistics.load.inPkts = ppsMatch
