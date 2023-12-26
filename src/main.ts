@@ -131,6 +131,23 @@ sections.forEach((section) => {
             ? parseInt(bpsMatch[1], 10)
             : 0;
         }
+      } else if (RegExp("Errors").test(line)) {
+        let errorMatch = line.match(/Errors: (\d+).*Drops: (\d+)/);
+        if (currentSection == "inErrors") {
+          currentPhysicalInterface.inErrors.counters.inErr = errorMatch
+            ? parseInt(errorMatch[1], 10)
+            : 0;
+          currentPhysicalInterface.inErrors.counters.inDrops = errorMatch
+            ? parseInt(errorMatch[2], 10)
+            : 0;
+        } else if (currentSection == "outErrors") {
+          currentPhysicalInterface.outErrors.counters.outErr = errorMatch
+            ? parseInt(errorMatch[1], 10)
+            : 0;
+          currentPhysicalInterface.inErrors.counters.outDrops = errorMatch
+            ? parseInt(errorMatch[2], 10)
+            : 0;
+        }
       }
     });
 
@@ -160,4 +177,4 @@ function convertSpeedToBitsPerSecond(value: string, unit: string) {
 
   return parseInt(value, 10) * multiplier;
 }
-console.log(physicalInterfaces);
+console.log(JSON.stringify(physicalInterfaces, null, "  "));
