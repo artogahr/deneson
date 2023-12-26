@@ -2,6 +2,7 @@ import {
   InterfaceStats,
   LogicalInterface,
   PhysicalInterface,
+  Protocol,
 } from "./interfaceObject.ts";
 const filePath = "src/input.txt";
 
@@ -166,6 +167,7 @@ sections.forEach((section) => {
     logicalInt.name = lines[0].split(" ")[4].replace(",", "");
     let currentSection = "";
     let currentStatistics = new InterfaceStats();
+    let currentProtocol = new Protocol();
     lines.forEach((line) => {
       if (RegExp("Description").test(line)) {
         logicalInt.dscr = line.split(":")[1].trim();
@@ -291,6 +293,11 @@ sections.forEach((section) => {
             break;
           }
         }
+      } else if (RegExp("Protocol").test(line)) {
+        currentSection = "protocol";
+        let protMatch = line.match(/Protocol (\w+)/);
+        currentProtocol = new Protocol(protMatch ? protMatch[1] : "");
+        logicalInt.protocolList.push(currentProtocol);
       }
     });
     currentPhysicalInterface.logIntList.push(logicalInt);
