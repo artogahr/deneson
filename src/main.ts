@@ -105,7 +105,6 @@ sections.forEach((section) => {
           RegExp("bps").test(line) && currentPhysicalInterface.trafficStats.load
         ) {
           let bpsMatch = line.match(/(\d+) bps/);
-          console.log(bpsMatch);
           currentPhysicalInterface.trafficStats.load.outBytes = bpsMatch
             ? parseInt(bpsMatch[1], 10)
             : 0;
@@ -210,14 +209,33 @@ sections.forEach((section) => {
                 let ppsMatch = line.match(/(\d+) pps/);
                 currentStatistics.load.inPkts = ppsMatch
                   ? parseInt(ppsMatch[0], 10)
-                  : 5;
+                  : 0;
               }
             }
             break;
           }
+          case "bundle": {
+            let lineMatch = line.match(
+              /Input : .* (\d+) .* (\d+) .* (\d+) .* (\d+)/,
+            );
+            currentStatistics.counters.inPkts = parseInt(
+              lineMatch ? lineMatch[1] : "0",
+              10,
+            );
+            currentStatistics.counters.inBytes = parseInt(
+              lineMatch ? lineMatch[3] : "0",
+            );
+            currentStatistics.load = {
+              inBytes: parseInt(lineMatch ? lineMatch[4] : "0"),
+              outBytes: 0,
+              inPkts: parseInt(lineMatch ? lineMatch[2] : "0"),
+              outPkts: 0,
+            };
+
+            break;
+          }
         }
       } else if (RegExp("Output").test(line)) {
-        console.log(line, currentSection);
         switch (currentSection) {
           case "local":
           case "transit":
@@ -246,6 +264,30 @@ sections.forEach((section) => {
                   : 0;
               }
             }
+            break;
+          }
+          case "bundle": {
+            let lineMatch = line.match(
+              /Output: .* (\d+) .* (\d+) .* (\d+) .* (\d+)/,
+            );
+            currentStatistics.counters.outPkts = parseInt(
+              lineMatch ? lineMatch[1] : "0",
+              10,
+            );
+            currentStatistics.counters.outBytes = parseInt(
+              lineMatch ? lineMatch[3] : "0",
+            );
+            if (currentStatistics.load) {
+              currentStatistics.load.outPkts = parseInt(
+                lineMatch ? lineMatch[2] : "0",
+              );
+              currentStatistics.load.outBytes = parseInt(
+                lineMatch ? lineMatch[4] : "0",
+              );
+            }
+            logicalInt.statsList.push(currentStatistics);
+            currentSection = "";
+            currentStatistics = new InterfaceStats();
             break;
           }
         }
