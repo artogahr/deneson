@@ -10,7 +10,7 @@ const filePath = "src/input.txt";
 // Read the contents of the file
 const text = await Deno.readTextFile(filePath);
 
-//Assuming the purpose of this script is to parse the physical interfaces only
+// Assuming the purpose of this script is to parse the physical interfaces only
 let physicalInterfaces: PhysicalInterface[] = [];
 
 // Split sections based on two new lines.
@@ -24,7 +24,7 @@ const sections = text.split("\n\n");
 
 sections.forEach((section) => {
   const lines = section.split("\n");
-  //Test if the interface is a Physical or a logical one
+  // Test if the interface is a Physical or a logical one
   if (RegExp("Physical interface:").test(lines[0])) {
     currentPhysicalInterface = new PhysicalInterface();
     let firstLineMatch = lines[0].match(
@@ -37,8 +37,10 @@ sections.forEach((section) => {
     }
 
     // Variable holding what kind of sub-section we're reading now
+    // In real life conditions we would use an enum here, assuming the conditions are well defined
     let currentSection = "";
     lines.forEach((line) => {
+      // Each one of these if statements check for different sections and will add data to the currentPhysicalInterface object
       if (RegExp("Description").test(line)) {
         currentPhysicalInterface.dscr = line.split(":")[1].trim();
       } else if (RegExp("Link-level type").test(line)) {
@@ -46,7 +48,6 @@ sections.forEach((section) => {
         let lineMatch = line.match(
           /Link-level type: (\w+), MTU: (\d+), Link-mode: ([\w'-]+), Speed: (\d+)([kmgtp]?bps)/,
         );
-        console.log(lineMatch);
         if (lineMatch) {
           currentPhysicalInterface.linkLevelType = lineMatch[1].toLowerCase();
           currentPhysicalInterface.mtu = parseInt(lineMatch[2], 10);
@@ -85,6 +86,7 @@ sections.forEach((section) => {
           line.split(":")[1].trim(),
           10,
         );
+        // Assuming the "Input bytes" is the first line of the section, we create the load object if there is bps data in there
         if (RegExp("bps").test(line)) {
           let bpsMatch = line.match(/(\d+) bps/);
           currentPhysicalInterface.statsList.load = {
@@ -161,7 +163,7 @@ sections.forEach((section) => {
 
     physicalInterfaces.push(currentPhysicalInterface);
   } else if (RegExp("Logical interface").test(lines[0])) {
-    //add to the current physical interface
+    // We will add this logical interface object to the last physical interface in the list (currentPhysicalInterface variable)
     let logicalInt = new LogicalInterface();
     logicalInt.name = lines[0].split(" ")[4].replace(",", "");
     let currentSection = "";
@@ -345,7 +347,7 @@ sections.forEach((section) => {
 });
 
 function convertSpeedToBitsPerSecond(value: string, unit: string) {
-  var multiplier = 1;
+  let multiplier = 1;
   unit = unit.toLowerCase();
 
   let multipliers: { [key: string]: number } = {
