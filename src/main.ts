@@ -42,23 +42,20 @@ sections.forEach((section) => {
       if (RegExp("Description").test(line)) {
         currentPhysicalInterface.dscr = line.split(":")[1].trim();
       } else if (RegExp("Link-level type").test(line)) {
-        var linkLevelMatch = line.match(/Link-level type: (\w+)/);
-        currentPhysicalInterface.linkLevelType = linkLevelMatch
-          ? linkLevelMatch[1].toLowerCase()
-          : "";
-
-        var mtuMatch = line.match(/MTU: (\d+)/);
-        currentPhysicalInterface.mtu = mtuMatch ? parseInt(mtuMatch[1], 10) : 0;
-
-        var linkModeMatch = line.match(/Link-mode: (\w+)/);
-        currentPhysicalInterface.duplex = linkModeMatch
-          ? linkModeMatch[1].toLowerCase()
-          : undefined;
-
-        var speedMatch = line.match(/Speed: (\d+)([KMGTP]?bps)/i);
-        currentPhysicalInterface.speed = speedMatch
-          ? convertSpeedToBitsPerSecond(speedMatch[1], speedMatch[2])
-          : 0;
+        // Assuming these 4 values are always provided
+        let lineMatch = line.match(
+          /Link-level type: (\w+), MTU: (\d+), Link-mode: ([\w'-]+), Speed: (\d+)([kmgtp]?bps)/,
+        );
+        console.log(lineMatch);
+        if (lineMatch) {
+          currentPhysicalInterface.linkLevelType = lineMatch[1].toLowerCase();
+          currentPhysicalInterface.mtu = parseInt(lineMatch[2], 10);
+          currentPhysicalInterface.duplex = lineMatch[3].toLowerCase();
+          currentPhysicalInterface.speed = convertSpeedToBitsPerSecond(
+            lineMatch[4],
+            lineMatch[5],
+          );
+        }
       } else if (RegExp("Current address").test(line)) {
         var macMatch = line.match(
           /Hardware address: (\w+):(\w+):(\w+):(\w+):(\w+):(\w+)/,
