@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-regex-spaces
 import {
   InterfaceStats,
   IPInfo,
@@ -11,7 +12,7 @@ const filePath = "src/input.txt";
 const text = await Deno.readTextFile(filePath);
 
 // Assuming the purpose of this script is to parse the physical interfaces only
-let physicalInterfaces: PhysicalInterface[] = [];
+const physicalInterfaces: PhysicalInterface[] = [];
 
 // Split sections based on two new lines.
 // Will create an object for each section, but check if it is a physical interface or a logical one.
@@ -27,7 +28,7 @@ sections.forEach((section) => {
   // Test if the interface is a Physical or a logical one
   if (RegExp("Physical interface:").test(lines[0])) {
     currentPhysicalInterface = new PhysicalInterface();
-    let firstLineMatch = lines[0].match(
+    const firstLineMatch = lines[0].match(
       /Physical interface: ([\w'-\/]+), (\w+), Physical link is (\w+)/,
     );
     if (firstLineMatch) {
@@ -45,7 +46,7 @@ sections.forEach((section) => {
         currentPhysicalInterface.dscr = line.split(":")[1].trim();
       } else if (RegExp("Link-level type").test(line)) {
         // Assuming these 4 values are always provided
-        let lineMatch = line.match(
+        const lineMatch = line.match(
           /Link-level type: (\w+), MTU: (\d+), Link-mode: ([\w'-]+), Speed: (\d+)([kmgtp]?bps)/,
         );
         if (lineMatch) {
@@ -58,7 +59,7 @@ sections.forEach((section) => {
           );
         }
       } else if (RegExp("Current address").test(line)) {
-        var macMatch = line.match(
+        const macMatch = line.match(
           /Hardware address: (\w+):(\w+):(\w+):(\w+):(\w+):(\w+)/,
         );
         currentPhysicalInterface.mac = macMatch
@@ -88,7 +89,7 @@ sections.forEach((section) => {
         );
         // Assuming the "Input bytes" is the first line of the section, we create the load object if there is bps data in there
         if (RegExp("bps").test(line)) {
-          let bpsMatch = line.match(/(\d+) bps/);
+          const bpsMatch = line.match(/(\d+) bps/);
           currentPhysicalInterface.statsList.load = {
             inBytes: bpsMatch ? parseInt(bpsMatch[1], 10) : 0,
             outBytes: 0,
@@ -106,7 +107,7 @@ sections.forEach((section) => {
         if (
           RegExp("bps").test(line) && currentPhysicalInterface.statsList.load
         ) {
-          let bpsMatch = line.match(/(\d+) bps/);
+          const bpsMatch = line.match(/(\d+) bps/);
           currentPhysicalInterface.statsList.load.outBytes = bpsMatch
             ? parseInt(bpsMatch[1], 10)
             : 0;
@@ -121,7 +122,7 @@ sections.forEach((section) => {
         if (
           RegExp("pps").test(line) && currentPhysicalInterface.statsList.load
         ) {
-          let bpsMatch = line.match(/(\d+) pps/);
+          const bpsMatch = line.match(/(\d+) pps/);
           currentPhysicalInterface.statsList.load.inPkts = bpsMatch
             ? parseInt(bpsMatch[0], 10)
             : 0;
@@ -136,13 +137,13 @@ sections.forEach((section) => {
         if (
           RegExp("pps").test(line) && currentPhysicalInterface.statsList.load
         ) {
-          let bpsMatch = line.match(/(\d+) pps/);
+          const bpsMatch = line.match(/(\d+) pps/);
           currentPhysicalInterface.statsList.load.outPkts = bpsMatch
             ? parseInt(bpsMatch[1], 10)
             : 0;
         }
       } else if (RegExp("Errors").test(line)) {
-        let errorMatch = line.match(/Errors: (\d+).*Drops: (\d+)/);
+        const errorMatch = line.match(/Errors: (\d+).*Drops: (\d+)/);
         if (currentSection == "inErrors") {
           currentPhysicalInterface.inErrors.counters.inErr = errorMatch
             ? parseInt(errorMatch[1], 10)
@@ -164,7 +165,7 @@ sections.forEach((section) => {
     physicalInterfaces.push(currentPhysicalInterface);
   } else if (RegExp("Logical interface").test(lines[0])) {
     // We will add this logical interface object to the last physical interface in the list (currentPhysicalInterface variable)
-    let logicalInt = new LogicalInterface();
+    const logicalInt = new LogicalInterface();
     logicalInt.name = lines[0].split(" ")[4].replace(",", "");
     let currentSection = "";
     let currentStatistics = new InterfaceStats();
@@ -196,7 +197,7 @@ sections.forEach((section) => {
                 10,
               );
               if (RegExp("bps").test(line)) {
-                let bpsMatch = line.match(/(\d+) bps/);
+                const bpsMatch = line.match(/(\d+) bps/);
                 currentStatistics.load = {
                   inBytes: bpsMatch ? parseInt(bpsMatch[0], 10) : 0,
                   outBytes: 0,
@@ -210,7 +211,7 @@ sections.forEach((section) => {
                 10,
               );
               if (RegExp("pps").test(line) && currentStatistics.load) {
-                let ppsMatch = line.match(/(\d+) pps/);
+                const ppsMatch = line.match(/(\d+) pps/);
                 currentStatistics.load.inPkts = ppsMatch
                   ? parseInt(ppsMatch[0], 10)
                   : 0;
@@ -219,7 +220,7 @@ sections.forEach((section) => {
             break;
           }
           case "bundle": {
-            let lineMatch = line.match(
+            const lineMatch = line.match(
               /Input : .* (\d+) .* (\d+) .* (\d+) .* (\d+)/,
             );
             currentStatistics.counters.inPkts = parseInt(
@@ -251,7 +252,7 @@ sections.forEach((section) => {
               logicalInt.statsList.push(currentStatistics);
               currentStatistics = new InterfaceStats();
               if (RegExp("pps").test(line) && currentStatistics.load) {
-                let ppsMatch = line.match(/(\d+) pps/);
+                const ppsMatch = line.match(/(\d+) pps/);
                 currentStatistics.load.outPkts = ppsMatch
                   ? parseInt(ppsMatch[1], 10)
                   : 0;
@@ -262,7 +263,7 @@ sections.forEach((section) => {
                 10,
               );
               if (RegExp("bps").test(line) && currentStatistics.load) {
-                let bpsMatch = line.match(/(\d+) bps/);
+                const bpsMatch = line.match(/(\d+) bps/);
                 currentStatistics.load.outBytes = bpsMatch
                   ? parseInt(bpsMatch[1], 10)
                   : 0;
@@ -271,7 +272,7 @@ sections.forEach((section) => {
             break;
           }
           case "bundle": {
-            let lineMatch = line.match(
+            const lineMatch = line.match(
               /Output: .* (\d+) .* (\d+) .* (\d+) .* (\d+)/,
             );
             currentStatistics.counters.outPkts = parseInt(
@@ -297,12 +298,12 @@ sections.forEach((section) => {
         }
       } else if (RegExp("Protocol").test(line)) {
         currentSection = "protocol";
-        let protMatch = line.match(/Protocol (\w+)/);
+        const protMatch = line.match(/Protocol (\w+)/);
         currentProtocol = new Protocol(protMatch ? protMatch[1] : "");
         // This could've been an if statement, but I want to leave it open-handed for parsing info from other protocols in the future
         switch (currentProtocol.type) {
           case "inet": {
-            let mtuMatch = line.match(/MTU: (\d+)/);
+            const mtuMatch = line.match(/MTU: (\d+)/);
             if (mtuMatch) {
               logicalInt.mtu = parseInt(mtuMatch[1], 10);
             }
@@ -324,11 +325,11 @@ sections.forEach((section) => {
         RegExp("Destination").test(line) && currentProtocol.type == "inet"
       ) {
         // Parsing IP addresses is a biit tricky.
-        let ipMatch = line.match(
+        const ipMatch = line.match(
           /Destination: (\d+\.\d+\.\d+\.\d+)\/(\d+), Local: (\d+\.\d+\.\d+\.\d+)/,
         );
         if (currentProtocol.value) {
-          let mask = ipMatch ? parseInt(ipMatch[2]) : 0;
+          const mask = ipMatch ? parseInt(ipMatch[2]) : 0;
           currentIPInfo.net = ipMatch ? ipMatch[1] + "/" + mask : "";
           currentIPInfo.mask = mask;
           currentIPInfo.ip = ipMatch ? ipMatch[3] : "";
@@ -350,7 +351,7 @@ function convertSpeedToBitsPerSecond(value: string, unit: string) {
   let multiplier = 1;
   unit = unit.toLowerCase();
 
-  let multipliers: { [key: string]: number } = {
+  const multipliers: { [key: string]: number } = {
     kbps: 1e3,
     mbps: 1e6,
     gbps: 1e9,
@@ -366,7 +367,7 @@ function convertSpeedToBitsPerSecond(value: string, unit: string) {
 console.log(JSON.stringify(physicalInterfaces, null, "  "));
 
 function IPtoLong(ip: string) {
-  let parts = ip.split(".");
+  const parts = ip.split(".");
   return (
     (parseInt(parts[0], 10) << 24) |
     (parseInt(parts[1], 10) << 16) |
